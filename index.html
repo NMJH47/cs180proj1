@@ -48,8 +48,8 @@
         <img src="point2.jpg" alt="Edge Detection Image 1" />
         <img src="point3.jpg" alt="Edge Detection Image 2" />
 
-        <h3>2.2 Remove Unnecessary Edge Parts</h3>
-        <p>My idea is to remove unnecessary edge parts in the image, especially those areas with almost no information (usually white or nearly white areas), so as to process and align the image more effectively. The function checks each row and column of the image to find those areas containing non-white pixels (that is, pixel values below the threshold parameter setting value, which is 0.9 by default). Find the location of the outermost non-white area respectively. According to the detected non-white area boundaries, crop the image to the smallest rectangular frame containing these areas to remove the useless edges of the image. Obviously, I only considered the white case, but most of the time, the invalid information on the edge may also be blue and red, but in my attempt, removing blue and red is likely to affect the picture, so I only considered white.</p>
+        <h3>2.2 Remove Edge Parts</h3>
+        <p>My idea is to remove y edge parts in the image, especially those areas with almost no information (usually white or nearly white areas), so as to process and align the image more effectively. The function checks each row and column of the image to find those areas containing non-white pixels (that is, pixel values below the threshold parameter setting value, which is 0.9 by default). Find the location of the outermost non-white area respectively. According to the detected non-white area boundaries, crop the image to the smallest rectangular frame containing these areas to remove the useless edges of the image. Obviously, I only considered the white case, but most of the time, the invalid information on the edge may also be blue and red, but in my attempt, removing blue and red is likely to affect the picture, so I only considered white.</p>
         <img src="point4.jpg" alt="Remove Unnecessary Edge Parts Image" />
 
         <h3>2.3 Crop</h3>
