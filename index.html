@@ -38,27 +38,32 @@
         <p>The main goal of this project is to implement an image alignment algorithm to align red, green, and blue color channels to produce a color-accurate image output. Specifically, the code uses a pyramid image alignment method combined with normalized cross correlation (NCC) as an evaluation metric to achieve multi-level alignment of images.</p>
         <p>We use NCC as the basis for judging the similarity of images. First, remove the mean of the two images separately to remove the average brightness in the image. Calculate the sum of the products of the images after removing the mean as the numerator. Calculate the square root of the product of the sum of the squares of each image after removing the mean as the denominator. Finally, divide the numerator by the denominator to get the NCC value. If the denominator is zero, the NCC is set to zero. NCC is used to evaluate the similarity of two image blocks under different offsets to find the best alignment position.</p>
         <p>However, when processing large image files such as tif files, there may be a large offset, which may be slow and ineffective, so we need to build a pyramid alignment method. The pyramid alignment method is to achieve accurate alignment of different color channels by reducing the resolution of the image layer by layer. Starting from the original image, gradually reduce the size of the image until the minimum size of the image reaches a certain threshold. Perform preliminary alignment on the top layer of the pyramid, that is, the image with the smallest size. Move down from the top layer of the pyramid, each time using the alignment result of the previous layer as the initial translation of the current layer for further alignment. In order to ensure accuracy, I usually search all layers step by step. Although the whole process is very slow, it can ensure the accuracy of image synthesis. Of course, you can also adjust the research range to 15 to reduce the time.</p>
-        <img src="point1.jpg" alt="Image for Section 1" />
+        <img src="NCC version1/emir_aligned_contrasted.jpg" alt="1.1" />
+        <img src="NCC version1/lady_aligned_contrasted.jpg" alt="1.2" />
+        <img src="NCC version1/melons_aligned_contrasted.jpg alt="1.3" />
     </section>
 
     <section>
         <h2>Section 2: Bells and Whistles</h2>
         <h3>2.1 Edge Detection</h3>
         <p>For some images, edge detection is not so effective, but for some images with a huge difference between red and blue, such as emir.tif, edge detection is a good optimization. I used the Canny edge detection algorithm to extract edge information in the image, and then performed image alignment on these edge maps. Compared with directly using the pixel intensity values of the image for alignment, this method can better ignore changes in color or brightness and focus on important shapes and structures in the image, thereby improving the accuracy of alignment.</p>
-        <img src="point2.jpg" alt="Edge Detection Image 1" />
-        <img src="point3.jpg" alt="Edge Detection Image 2" />
+        <img src="NCC version 2/aligned_emir.jpg" alt="2.1.1" />
+        <img src="NCC version 2/aligned_lady.jpg" alt="2.1.2" />
+        <img src="NCC version 2/aligned_melons.jpg" alt="2.1.3" />
 
         <h3>2.2 Remove Edge Parts</h3>
         <p>My idea is to remove y edge parts in the image, especially those areas with almost no information (usually white or nearly white areas), so as to process and align the image more effectively. The function checks each row and column of the image to find those areas containing non-white pixels (that is, pixel values below the threshold parameter setting value, which is 0.9 by default). Find the location of the outermost non-white area respectively. According to the detected non-white area boundaries, crop the image to the smallest rectangular frame containing these areas to remove the useless edges of the image. Obviously, I only considered the white case, but most of the time, the invalid information on the edge may also be blue and red, but in my attempt, removing blue and red is likely to affect the picture, so I only considered white.</p>
-        <img src="point4.jpg" alt="Remove Unnecessary Edge Parts Image" />
-
+        <img src="NCC version 2/aligned_church.jpg" alt="Before moving the edge 2.2.1" />
+        <img src="improved output/aligned_church.jpg" alt="After removing the edge 2.2.3" />
+        
         <h3>2.3 Crop</h3>
         <p>The main purpose of the crop function I added is to crop the two images so that they are the same size. In image processing, especially the alignment of multi-channel images, the size of the images may be inconsistent due to different alignment offsets. This ensures that the size of each channel image is consistent, making the subsequent image overlay processing smoother and without problems due to size mismatch. First, the minimum height and minimum width of the two images are calculated, and then it crops the two images based on these minimum heights and widths, keeping only the front part of the image. Finally, the two cropped images are returned.</p>
-        <img src="point5.jpg" alt="Crop Image" />
 
         <h3>2.4 White Balance</h3>
         <p>White balance is a technique for correcting image color deviations. By adjusting the average value of each color channel, the overall tone of the image is more natural and balanced. The white balance function calculates the average value and average grayscale value of the three channels of red, green, and blue in the image. By adjusting the pixel value of each color channel, the average value of each channel is close to avg_gray. Specifically, the pixel value of each channel is multiplied by a scaling factor, which is the ratio of avg_gray to the average value of the channel. The pixel value of each channel is clipped to ensure that it is in the range of 0 to 1. However, the actual effect makes the entire tone very dim, which does not conform to the aesthetics of the image, so the code is finally implemented but the final display part is not used.</p>
-        <img src="point6.jpg" alt="White Balance Image" />
+        <img src="NCC version 2/aligned_emir.jpg" alt="Berfore White Balancing Image 2.4.1" />
+        <img src="improved output 1/aligned_emir.jpg alt="After White Balancing Image 2.4.2" />
+        
 
         <h3>2.5 Parallel Processing</h3>
         <p>In the main function, I used the Parallel and delayed functions of the joblib library to parallelize the image processing tasks. Since I am writing a batch process of a whole folder of pictures, this can greatly improve the average speed of processing pictures.</p>
@@ -66,7 +71,20 @@
 
     <section>
         <h2>Section 3: Final Result</h2>
-        <img src="point7.jpg" alt="Final Result Image" />
+        <img src="improved output/aligned_cathedral.jpg" alt="Final Result Image" />
+        <img src="improved output/aligned_church.jpg" alt="Green channel shift: (-21, 25) Red channel shift: (12, 15)" />
+        <img src="NCC version 2/aligned_emir.jpg" alt="Green channel shift: (-47, 49) Red channel shift: (11, 66)" />
+        <img src="improved output/aligned_harvesters.jpg" alt="Green channel shift: (-24, 36) Red channel shift: (278, 14)" />
+        <img src="improved output/aligned_icon.jpg" alt=Green channel shift: (42, 53) Red channel shift: (90, 59)" />
+        <img src="improved output/aligned_lady.jpg" alt="Green channel shift: (-18, 39) Red channel shift: (43, 27)" />
+        <img src="improved output/aligned_melons.jpg" alt="Green channel shift: (-34, 25) Red channel shift: (54, 22)" />
+        <img src="improved output/aligned_monastery.jpg" alt="Green channel shift: (-13, 3) Red channel shift: (-7, 2)" />
+        <img src="improved output/aligned_onion_church.jpg" alt="Green channel shift: (-65, 32) Red channel shift: (-10, 40)" />
+        <img src="improved output/aligned_sculpture.jpg" alt="Green channel shift: (-73, 3) Red channel shift: (34, -23)" />
+        <img src="improved output/aligned_self_portrait.jpg" alt="Green channel shift: (-52, 59) Red channel shift: (46, 70)" />
+        <img src="improved output/aligned_three_generations.jpg" alt="Green channel shift: (-44, 31) Red channel shift: (11, 22)" />
+        <img src="improved output/aligned_train.jpg" alt="Green channel shift: (-17, 25) Red channel shift: (20, 44)" />
+        <img src="improved output/aligned_tobolsk.jpg" alt="Green channel shift: (-3, 0) Red channel shift: (0, -1)" />
     </section>
 
 </body>
